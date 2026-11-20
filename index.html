@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="دموی پیشنهادی DARIUSH Digital Studio: تأیید و تغییر نوبت با پنل پذیرش و پیش‌نمایش پیام یادآوری. نام‌ها مستعار و داده‌ها ساختگی است.">
+<meta name="theme-color" content="#2f4fc4">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:title" content="پیگیری و تأیید نوبت">
+<meta property="og:description" content="دموی پیشنهادی DARIUSH Digital Studio: تأیید و تغییر نوبت با پنل پذیرش و پیش‌نمایش پیام یادآوری. نام‌ها مستعار و داده‌ها ساختگی است.">
+<meta property="og:url" content="https://dariush-tech.github.io/anil-appointment-demo/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232f4fc4'/%3E%3Crect x='7' y='9' width='18' height='16' rx='2' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M7 14h18M12 6v5M20 6v5' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>پیگیری نوبت آنیل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one appointment card for the visitor (time first, then the two choices), and a reception desk where
+   change requests sit on top of the day's list. A three-step demo path ties the two views together. */
+:root {
+  --bg: #f5f5f8;
+  --surface: #ffffff;
+  --surface-2: #eef0f6;
+  --field: #fbfbfd;
+  --ink: #181b2b;
+  --muted: #5d6275;
+  --line: #e0e2ec;
+  --line-strong: #c7cadb;
+  --accent: #2f4fc4;
+  --accent-ink: #ffffff;
+  --accent-soft: #e5eafb;
+  --accent-strong: #1d327f;
+  --ok: #1d7446;      --ok-soft: #e0f2e7;
+  --wait: #9a5a00;    --wait-soft: #fbefd9;
+  --chg: #6a3fc4;     --chg-soft: #efe8fb;
+  --bad: #b3262d;     --bad-soft: #fbe5e6;
+  --strip-bg: #1d327f; --strip-fg: #ffffff;
+  --shadow: 0 1px 2px rgba(24, 27, 43, 0.06), 0 6px 18px rgba(24, 27, 43, 0.05);
+  --scrim: rgba(16, 18, 32, 0.45);
+  --font: "Vazirmatn", "Tahoma", "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10121b; --surface: #171a26; --surface-2: #1e2232; --field: #141724; --ink: #e7e9f3; --muted: #9ba0b6;
+    --line: #262a3c; --line-strong: #353a52; --accent: #7f99ff; --accent-ink: #0c1230; --accent-soft: #1d2650; --accent-strong: #b9c7ff;
+    --ok: #6fd39b; --ok-soft: #13301f; --wait: #f2b85a; --wait-soft: #392a10; --chg: #b79bff; --chg-soft: #2a2050; --bad: #f28b8b; --bad-soft: #3a1a1c;
+    --strip-bg: #1d2650; --strip-fg: #c9d4ff; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25); --scrim: rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10121b; --surface: #171a26; --surface-2: #1e2232; --field: #141724; --ink: #e7e9f3; --muted: #9ba0b6;
+  --line: #262a3c; --line-strong: #353a52; --accent: #7f99ff; --accent-ink: #0c1230; --accent-soft: #1d2650; --accent-strong: #b9c7ff;
+  --ok: #6fd39b; --ok-soft: #13301f; --wait: #f2b85a; --wait-soft: #392a10; --chg: #b79bff; --chg-soft: #2a2050; --bad: #f28b8b; --bad-soft: #3a1a1c;
+  --strip-bg: #1d2650; --strip-fg: #c9d4ff; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25); --scrim: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.75; direction: rtl; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { margin: 0; line-height: 1.4; text-wrap: balance; }
+p { margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--mono); direction: ltr; unicode-bidi: isolate; }
+.num { font-variant-numeric: tabular-nums; }
+
+.strip { background: var(--strip-bg); color: var(--strip-fg); }
+.strip .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 16px; padding-block: 7px; font-size: 13px; }
+.strip span { opacity: 0.85; }
+.head .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 16px 10px; }
+.title h1 { font-size: 1.28rem; }
+.title p { font-size: 13.5px; color: var(--muted); }
+.head-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tabs { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 2px; }
+.tab { border: 0; background: none; padding: 8px 16px; border-radius: 9px; font-weight: 500; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
+.tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.badge { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--chg-soft); color: var(--chg); font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; }
+.badge[data-zero="true"] { background: var(--surface-2); color: var(--muted); }
+
+.btn { border: 1px solid transparent; border-radius: 10px; padding: 10px 16px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 8px; line-height: 1.3; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { filter: brightness(1.07); }
+.btn-ghost { background: var(--surface); border-color: var(--line-strong); }
+.btn-ghost:hover { background: var(--surface-2); }
+.btn-ok { background: var(--ok); color: var(--surface); }
+.btn-bad { background: var(--surface); border-color: var(--bad); color: var(--bad); }
+.btn-danger { background: var(--bad); color: var(--surface); }
+.btn-sm { padding: 6px 12px; font-size: 13.5px; border-radius: 9px; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.linkish { background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+.path { padding-block: 4px 14px; }
+.path ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.step { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); padding: 5px 12px 5px 10px; border: 1px dashed var(--line-strong); border-radius: 999px; background: var(--surface); }
+.step i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-size: 12px; font-weight: 700; }
+.step.done { color: var(--accent-strong); border-style: solid; border-color: var(--accent); background: var(--accent-soft); }
+.step.done i { background: var(--accent); color: var(--accent-ink); }
+.step .sh { display: none; }
+
+main { padding-bottom: 40px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); min-width: 0; }
+.card h2 { font-size: 1.04rem; }
+.sec-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.p-awaiting { background: var(--wait-soft); color: var(--wait); }
+.p-confirmed { background: var(--ok-soft); color: var(--ok); }
+.p-change { background: var(--chg-soft); color: var(--chg); }
+
+/* visitor view */
+.me { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.appt { display: grid; gap: 18px; }
+.appt-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.who { font-size: 13.5px; color: var(--muted); }
+.who b { color: var(--ink); font-weight: 500; }
+.when { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 18px; align-items: center; padding: 18px; border-radius: 14px; background: var(--surface-2); }
+.when .time { font-size: 2.6rem; font-weight: 700; line-height: 1; letter-spacing: -0.01em; grid-row: span 2; font-variant-numeric: tabular-nums; }
+.when .day { font-size: 1.05rem; font-weight: 500; }
+.when .rel { font-size: 13px; color: var(--muted); }
+.when.changed .time { color: var(--ok); }
+.notice { border-radius: 12px; padding: 12px 14px; font-size: 14px; display: grid; gap: 4px; }
+.notice b { font-weight: 700; }
+.n-wait { background: var(--wait-soft); color: var(--ink); }
+.n-ok { background: var(--ok-soft); color: var(--ink); }
+.n-chg { background: var(--chg-soft); color: var(--ink); }
+.n-bad { background: var(--bad-soft); color: var(--ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.slots { display: grid; gap: 8px; }
+.slot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-strong); background: var(--field); text-align: start; width: 100%; }
+.slot[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent); }
+.slot .t { font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.slot .d { font-size: 13.5px; color: var(--muted); }
+.slot .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-strong); flex: none; display: grid; place-items: center; }
+.slot[aria-checked="true"] .dot { border-color: var(--accent); }
+.slot[aria-checked="true"] .dot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.chooser { display: grid; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+.timeline { list-style: none; margin: 0; padding: 0 14px 0 0; border-inline-start: 2px solid var(--line); display: grid; gap: 10px; }
+.timeline li { position: relative; font-size: 13.5px; }
+.timeline li::before { content: ""; position: absolute; inset-inline-start: -21px; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); }
+.timeline small { display: block; color: var(--muted); font-size: 12px; }
+.side { display: grid; gap: 20px; }
+.preview-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--wait); background: var(--wait-soft); padding: 3px 10px; border-radius: 999px; }
+.phone { background: var(--surface-2); border-radius: 14px; padding: 14px; display: grid; gap: 8px; }
+.phone .from { font-size: 12px; color: var(--muted); text-align: center; }
+.bubble { background: var(--surface); border: 1px solid var(--line); border-radius: 16px 16px 16px 4px; padding: 12px 14px; font-size: 14px; line-height: 1.9; }
+.bubble .lnk { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; font-family: var(--mono); font-size: 13px; direction: ltr; unicode-bidi: isolate; }
+.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; counter-reset: r; font-size: 13.5px; }
+.route li { counter-increment: r; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; }
+.route li::before { content: counter(r, persian); width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-strong); font-size: 12px; font-weight: 700; display: grid; place-items: center; margin-top: 2px; }
+.about ul { margin: 8px 0 0; padding-inline-start: 18px; display: grid; gap: 4px; font-size: 13.5px; color: var(--muted); }
+
+/* reception view */
+.desk { display: grid; gap: 20px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; gap: 2px; }
+.stat b { font-size: 1.5rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 13px; color: var(--muted); }
+.stat.s-chg b { color: var(--chg); } .stat.s-wait b { color: var(--wait); } .stat.s-ok b { color: var(--ok); }
+.reqs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px; }
+.req { border: 1px solid var(--line); border-inline-start: 4px solid var(--chg); border-radius: 12px; padding: 14px; display: grid; gap: 10px; background: var(--surface); }
+.req.fresh { animation: flash 1.6s ease-out; }
+@keyframes flash { from { background: var(--chg-soft); } to { background: var(--surface); } }
+.req-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.move { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; font-size: 13.5px; }
+.move .from { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line-strong); }
+.move .to { font-weight: 700; }
+.move svg { width: 18px; height: 18px; color: var(--muted); }
+.reject-box { display: grid; gap: 8px; padding: 10px; border-radius: 10px; background: var(--surface-2); }
+.reject-box select { width: 100%; padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--field); font-size: 15px; }
+.empty { padding: 22px 16px; text-align: center; color: var(--muted); border: 1px dashed var(--line-strong); border-radius: 12px; font-size: 14px; }
+.day-h { font-size: 13px; color: var(--muted); font-weight: 500; margin: 14px 0 6px; }
+.day-h:first-child { margin-top: 0; }
+.rows { display: grid; gap: 6px; }
+.row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.row.mine { border-color: var(--accent); }
+.row .t { font-weight: 700; font-variant-numeric: tabular-nums; }
+.row .n { min-width: 0; display: grid; }
+.row .n small { font-size: 12px; color: var(--muted); }
+.tag { font-size: 11px; font-weight: 700; color: var(--accent-strong); background: var(--accent-soft); padding: 1px 8px; border-radius: 999px; margin-inline-start: 6px; }
+
+.overlay { position: fixed; inset: 0; z-index: 30; background: var(--scrim); display: grid; place-items: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.modal { width: min(460px, 100%); max-height: 100%; overflow: auto; background: var(--surface); border-radius: 16px; padding: 20px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.x { border: 0; background: var(--surface-2); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; line-height: 1; }
+.toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 14px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow); width: max-content; max-width: calc(100% - 32px); display: flex; align-items: center; gap: 12px; }
+.toast button { background: none; border: 0; color: inherit; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; padding: 0; white-space: nowrap; }
+.foot { font-size: 12.5px; color: var(--muted); padding-block: 0 24px; }
+
+@media (max-width: 860px) {
+  .me { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .title h1 { font-size: 1.12rem; }
+  .head .wrap { padding-block: 12px 8px; }
+  .head-actions { width: 100%; justify-content: space-between; }
+  .card { padding: 16px; }
+  .step .lg { display: none; } .step .sh { display: inline; }
+  .step { font-size: 12.5px; padding: 4px 10px 4px 8px; }
+  .when .time { font-size: 2.1rem; }
+  .stats { gap: 6px; } .stat { padding: 10px; } .stat b { font-size: 1.25rem; } .stat span { font-size: 12px; }
+  .row { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .row .remind { grid-column: 2 / -1; justify-self: start; }
+}
+@media (prefers-reduced-motion: reduce) { .req.fresh { animation: none; } }
+</style>
+</head>
+<body>
+<div class="strip">
+  <div class="wrap">
+    <b>دموی پیشنهادی DARIUSH Digital Studio</b>
+    <span>نسخهٔ نمایشی · نام‌ها مستعار و همهٔ داده‌ها ساختگی است و فقط در همین مرورگر ذخیره می‌شود</span>
+  </div>
+</div>
+
+<header class="head">
+  <div class="wrap">
+    <div class="title">
+      <h1>پیگیری و تأیید نوبت</h1>
+      <p>طرح پیشنهادی برای کلینیک آنیل · در کنار سامانهٔ رزرو فعلی</p>
+    </div>
+    <div class="head-actions">
+      <div class="tabs" role="tablist" aria-label="نماهای دمو">
+        <button class="tab" role="tab" id="tab-me" aria-controls="view-me" aria-selected="true" type="button">نوبت من</button>
+        <button class="tab" role="tab" id="tab-desk" aria-controls="view-desk" aria-selected="false" type="button">پنل پذیرش <span class="badge" id="req-count">۰</span></button>
+      </div>
+      <div id="reset-area"></div>
+    </div>
+  </div>
+</header>
+
+<nav class="path" aria-label="مسیر دمو">
+  <div class="wrap">
+    <ol id="steps">
+      <li class="step" data-step="ask"><i>۱</i><span class="lg">در «نوبت من» زمان دیگری درخواست کنید</span><span class="sh">درخواست تغییر</span></li>
+      <li class="step" data-step="decide"><i>۲</i><span class="lg">در «پنل پذیرش» درخواست را تأیید یا رد کنید</span><span class="sh">تصمیم پذیرش</span></li>
+      <li class="step" data-step="see"><i>۳</i><span class="lg">نتیجه را دوباره در «نوبت من» ببینید</span><span class="sh">دیدن نتیجه</span></li>
+    </ol>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <section id="view-me" role="tabpanel" aria-labelledby="tab-me">
+      <div class="me">
+        <div class="card appt" id="appt" aria-live="polite"></div>
+        <div class="side">
+          <div class="card" id="reminder"></div>
+          <div class="card about">
+            <h2>این صفحه کجای کار است</h2>
+            <ul>
+              <li>رزرو مثل امروز در سامانهٔ فعلی کلینیک ثبت می‌شود.</li>
+              <li>این صفحه فقط تأیید حضور، درخواست تغییر زمان و یادآوری را مدیریت می‌کند.</li>
+              <li>در دمو فقط نام مستعار، زمان و شناسهٔ رزرو نمونه به کار رفته است.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-desk" role="tabpanel" aria-labelledby="tab-desk" hidden>
+      <div class="desk">
+        <div class="stats" id="stats"></div>
+        <div class="card">
+          <div class="sec-title"><h2>درخواست‌های تغییر زمان</h2><span class="muted" style="font-size:13px">به ترتیب زمان ارسال</span></div>
+          <div class="reqs" id="reqs"></div>
+        </div>
+        <div class="card">
+          <div class="sec-title"><h2>نوبت‌های پیش‌رو</h2></div>
+          <div id="days"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">در نسخهٔ واقعی، پیام یادآوری از طریق سامانهٔ پیامک کلینیک فرستاده می‌شود؛ در این دمو هیچ پیامی ارسال نمی‌شود و هیچ اطلاعات درمانی دریافت نمی‌شود.</div>
+</footer>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <div class="modal-head"><h2 id="m-title" style="font-size:1rem"></h2><button class="x" type="button" id="m-close" aria-label="بستن">×</button></div>
+    <div id="m-body" style="display:grid;gap:12px"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  const KEY = "anil-appointment-demo-v1";
+  const MINE = "ANL-0427";
+  const LINK = "nobat.example/" + MINE;
+  const ST = { awaiting: "در انتظار تأیید", confirmed: "تأییدشده", change: "درخواست تغییر" };
+  const REASONS = ["این زمان دیگر خالی نیست.", "این زمان خارج از ساعت پذیرش است.", "لطفاً یکی از زمان‌های دیگر را انتخاب کنید."];
+  const MIN = 60e3, HOUR = 60 * MIN, DAY = 24 * HOUR;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fa = (n) => Number(n).toLocaleString("fa-IR");
+  let dayF, timeF, shortF;
+  try {
+    dayF = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { weekday: "long", day: "numeric", month: "long" });
+    shortF = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+    timeF = new Intl.DateTimeFormat("fa-IR", { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  } catch (e) { dayF = shortF = timeF = new Intl.DateTimeFormat("fa-IR"); }
+  const day = (t) => dayF.format(new Date(t));
+  const tm = (t) => timeF.format(new Date(t));
+  const stamp = (t) => shortF.format(new Date(t));
+  function rel(t) {
+    const a = new Date(); a.setHours(0, 0, 0, 0);
+    const b = new Date(t); b.setHours(0, 0, 0, 0);
+    const d = Math.round((b - a) / DAY);
+    return d === 0 ? "امروز" : d === 1 ? "فردا" : d === 2 ? "پس‌فردا" : d > 0 ? fa(d) + " روز دیگر" : "";
+  }
+  function at(off, h, m) { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + off); d.setHours(h, m, 0, 0); return d.getTime(); }
+
+  function seed() {
+    const now = Date.now();
+    return {
+      slots: [at(2, 16, 0), at(3, 9, 15), at(4, 18, 30)],
+      items: [
+        { id: MINE, alias: "آوا ر.", at: at(2, 10, 30), status: "awaiting", request: null, last: null, seen: true,
+          history: [{ t: now - DAY - 3 * HOUR, x: "نوبت در سامانهٔ رزرو کلینیک ثبت شد" }] },
+        { id: "ANL-0419", alias: "کیان م.", at: at(2, 9, 0), status: "confirmed", request: null, last: null,
+          history: [{ t: now - 2 * DAY, x: "نوبت ثبت شد" }, { t: now - DAY, x: "مراجعه‌کننده حضور را تأیید کرد" }] },
+        { id: "ANL-0433", alias: "ترانه س.", at: at(2, 11, 15), status: "awaiting", request: null, last: null,
+          history: [{ t: now - 20 * HOUR, x: "نوبت ثبت شد" }] },
+        { id: "ANL-0438", alias: "شیوا ک.", at: at(3, 10, 0), status: "confirmed", request: null, last: null,
+          history: [{ t: now - 3 * DAY, x: "نوبت ثبت شد" }, { t: now - 2 * DAY, x: "مراجعه‌کننده حضور را تأیید کرد" }] },
+        { id: "ANL-0441", alias: "بردیا ن.", at: at(3, 12, 30), status: "change", prev: "awaiting", last: null,
+          request: { to: at(3, 17, 0), t: now - 40 * MIN },
+          history: [{ t: now - DAY, x: "نوبت ثبت شد" }, { t: now - 40 * MIN, x: "درخواست تغییر زمان ارسال شد" }] },
+      ],
+    };
+  }
+  let state;
+  function load() {
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.items)) return s; } catch (e) {}
+    return seed();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  state = load();
+  const ui = { view: "me", choosing: false, pick: null, rejecting: null, resetAsk: false, fresh: null, steps: { ask: false, decide: false, see: false } };
+  const mine = () => state.items.find((i) => i.id === MINE);
+  const byId = (id) => state.items.find((i) => i.id === id);
+
+  /* ---------- routing ---------- */
+  const tabs = { me: $("#tab-me"), desk: $("#tab-desk") };
+  const views = { me: $("#view-me"), desk: $("#view-desk") };
+  function show(v) {
+    ui.view = v === "desk" ? "desk" : "me";
+    for (const k of ["me", "desk"]) { tabs[k].setAttribute("aria-selected", String(k === ui.view)); views[k].hidden = k !== ui.view; }
+    if (ui.view === "me") {
+      const m = mine();
+      if (m.last && !m.seen) { m.seen = true; ui.steps.see = true; save(); }
+    }
+    render();
+    try { scrollTo({ top: 0 }); } catch (e) {}
+  }
+  const route = () => show(location.hash === "#desk" ? "desk" : "me");
+  tabs.me.addEventListener("click", () => { location.hash = "me"; });
+  tabs.desk.addEventListener("click", () => { location.hash = "desk"; });
+  addEventListener("hashchange", route);
+  addEventListener("storage", (e) => { if (e.key === KEY) { state = load(); render(); } });
+
+  /* ---------- visitor ---------- */
+  function renderAppt() {
+    const m = mine(), box = $("#appt");
+    let notice = "", actions = "";
+    if (m.status === "change") {
+      notice = `<div class="notice n-chg"><b>درخواست تغییر برای پذیرش ارسال شد</b><span>زمان درخواستی: ${day(m.request.to)}، ساعت ${tm(m.request.to)}. تا تأیید پذیرش، نوبت فعلی برقرار است.</span></div>`;
+      actions = `<button class="btn btn-ghost" type="button" data-act="cancel">لغو درخواست تغییر</button>`;
+    } else {
+      if (m.last && m.last.ok) notice = `<div class="notice n-ok"><b>پذیرش تغییر نوبت را تأیید کرد</b><span>زمان جدید نوبت شما بالا نمایش داده شده است.</span></div>`;
+      else if (m.last && !m.last.ok) notice = `<div class="notice n-bad"><b>پذیرش درخواست تغییر را نپذیرفت</b><span>${esc(m.last.reason)} نوبت قبلی شما برقرار است.</span></div>`;
+      else if (m.status === "awaiting") notice = `<div class="notice n-wait"><b>لطفاً حضورتان را تأیید کنید</b><span>اگر این زمان مناسب نیست، یکی از زمان‌های جایگزین را درخواست دهید.</span></div>`;
+      else notice = `<div class="notice n-ok"><b>حضور شما تأیید شده است</b><span>اگر برنامه‌تان تغییر کرد، هنوز می‌توانید زمان دیگری درخواست دهید.</span></div>`;
+      actions = (m.status === "awaiting" ? `<button class="btn btn-primary" type="button" data-act="confirm">تأیید نوبت</button>` : "") +
+        `<button class="btn btn-ghost" type="button" data-act="choose" aria-expanded="${ui.choosing}">درخواست تغییر زمان</button>`;
+    }
+    const free = state.slots.filter((s) => s !== m.at && !state.items.some((i) => i.id !== MINE && i.at === s));
+    const chooser = ui.choosing && m.status !== "change" ? `
+      <div class="chooser" id="chooser">
+        <h3 style="font-size:14px" id="slots-label">زمان‌های جایگزین نمونه</h3>
+        <div class="slots" role="radiogroup" aria-labelledby="slots-label">
+          ${free.map((s, k) => `<button class="slot" type="button" role="radio" id="slot-${k}" data-slot="${s}" aria-checked="${ui.pick === s}">
+            <span><span class="t">${tm(s)}</span> <span class="d">${day(s)} · ${rel(s)}</span></span><span class="dot"></span></button>`).join("")}
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" data-act="send" ${ui.pick ? "" : "disabled"}>ارسال درخواست تغییر</button>
+          <button class="btn btn-ghost" type="button" data-act="close">انصراف</button>
+        </div>
+      </div>` : "";
+    box.innerHTML = `
+      <div class="appt-top">
+        <h2>نوبت شما در کلینیک آنیل</h2>
+        <span class="pill p-${m.status}">${ST[m.status]}</span>
+      </div>
+      <p class="who">مراجعه‌کننده: <b>${esc(m.alias)}</b> (نام مستعار) · شناسهٔ رزرو: <b class="mono">${m.id}</b></p>
+      <div class="when${m.last && m.last.ok && m.status !== "change" ? " changed" : ""}">
+        <span class="time">${tm(m.at)}</span><span class="day">${day(m.at)}</span><span class="rel">${rel(m.at)}</span>
+      </div>
+      ${notice}
+      <div class="actions">${actions}</div>
+      ${chooser}
+      <div>
+        <h3 style="font-size:13px;color:var(--muted);font-weight:500;margin-bottom:8px">سابقهٔ این نوبت</h3>
+        <ol class="timeline">${m.history.slice().reverse().map((h) => `<li>${esc(h.x)}<small>${stamp(h.t)}</small></li>`).join("")}</ol>
+      </div>`;
+  }
+  $("#appt").addEventListener("click", (e) => {
+    const s = e.target.closest("[data-slot]");
+    if (s) { ui.pick = Number(s.dataset.slot); renderAppt(); $(`[data-slot="${ui.pick}"]`).focus(); return; }
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const m = mine(), now = Date.now();
+    switch (b.dataset.act) {
+      case "confirm":
+        m.status = "confirmed"; m.last = null; m.history.push({ t: now, x: "مراجعه‌کننده حضور را تأیید کرد" });
+        ui.choosing = false; commit(); toast("نوبت تأیید شد و در پنل پذیرش هم به‌روز شد.", "پنل پذیرش", "desk"); break;
+      case "choose": ui.choosing = !ui.choosing; ui.pick = null; renderAppt(); if (ui.choosing) $("#chooser").scrollIntoView({ block: "nearest" }); break;
+      case "close": ui.choosing = false; ui.pick = null; renderAppt(); break;
+      case "send":
+        if (!ui.pick) return;
+        m.prev = m.status; m.status = "change"; m.request = { to: ui.pick, t: now }; m.last = null; m.seen = true;
+        m.history.push({ t: now, x: `درخواست تغییر به ${day(ui.pick)}، ساعت ${tm(ui.pick)} ارسال شد` });
+        ui.choosing = false; ui.pick = null; ui.fresh = MINE; ui.steps.ask = true;
+        commit(); toast("درخواست شما همین حالا در پنل پذیرش ظاهر شد.", "دیدن در پنل پذیرش", "desk"); break;
+      case "cancel":
+        m.status = m.prev || "awaiting"; m.request = null; m.history.push({ t: now, x: "مراجعه‌کننده درخواست تغییر را لغو کرد" });
+        commit(); toast("درخواست تغییر لغو شد."); break;
+    }
+  });
+
+  function smsText(it) {
+    return `<b>کلینیک آنیل | یادآوری نوبت</b><br>${esc(it.alias)} عزیز، نوبت شما ${day(it.at)}، ساعت ${tm(it.at)} است.<br>شناسهٔ رزرو: <span class="mono">${it.id}</span><br>تأیید یا تغییر نوبت: <button class="lnk" type="button" data-open="${it.id}">${esc("nobat.example/" + it.id)}</button>`;
+  }
+  function renderReminder() {
+    const m = mine();
+    $("#reminder").innerHTML = `
+      <div class="sec-title"><h2>پیام یادآوری</h2><span class="preview-tag">پیش‌نمایش · ارسال نمی‌شود</span></div>
+      <div class="phone"><span class="from">پیامک · ۲۴ ساعت پیش از نوبت</span><div class="bubble">${smsText(m)}</div></div>
+      <h3 style="font-size:13px;color:var(--muted);font-weight:500;margin:14px 0 8px">مسیر تغییر نوبت از روی پیام</h3>
+      <ol class="route">
+        <li>لینک داخل پیام را باز می‌کند و به صفحهٔ «نوبت من» می‌رسد.</li>
+        <li>«درخواست تغییر زمان» را می‌زند و یکی از زمان‌های خالی را انتخاب می‌کند.</li>
+        <li>درخواست در پنل پذیرش ظاهر می‌شود و پذیرش آن را تأیید یا رد می‌کند.</li>
+        <li>نتیجه در همین صفحه نشان داده می‌شود و پیام تأیید فرستاده می‌شود.</li>
+      </ol>`;
+  }
+  document.addEventListener("click", (e) => {
+    const l = e.target.closest("[data-open]"); if (!l) return;
+    closeModal();
+    if (l.dataset.open === MINE) {
+      location.hash = "me";
+      setTimeout(() => { if (mine().status !== "change") { ui.choosing = true; ui.pick = null; renderAppt(); $("#chooser").scrollIntoView({ block: "nearest" }); } }, 30);
+      toast("لینک پیام شبیه‌سازی شد: صفحهٔ «نوبت من» باز شد.");
+    } else toast("در دمو فقط لینک نوبت نمونهٔ شما (" + MINE + ") باز می‌شود.");
+  });
+
+  /* ---------- reception ---------- */
+  function renderDesk() {
+    const n = (s) => state.items.filter((i) => i.status === s).length;
+    $("#stats").innerHTML = `
+      <div class="stat s-chg"><b>${fa(n("change"))}</b><span>درخواست تغییر</span></div>
+      <div class="stat s-wait"><b>${fa(n("awaiting"))}</b><span>در انتظار تأیید</span></div>
+      <div class="stat s-ok"><b>${fa(n("confirmed"))}</b><span>تأییدشده</span></div>`;
+    const reqs = state.items.filter((i) => i.status === "change").sort((a, b) => b.request.t - a.request.t);
+    $("#reqs").innerHTML = reqs.length ? reqs.map((i) => `
+      <div class="req${ui.fresh === i.id ? " fresh" : ""}" data-id="${i.id}">
+        <div class="req-top"><span><b style="font-weight:500">${esc(i.alias)}</b>${i.id === MINE ? '<span class="tag">نوبت نمونهٔ شما</span>' : ""}</span><span class="mono muted" style="font-size:12.5px">${i.id}</span></div>
+        <div class="move"><span class="from">${day(i.at)}<br>ساعت ${tm(i.at)}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="به"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+          <span class="to">${day(i.request.to)}<br>ساعت ${tm(i.request.to)}</span></div>
+        <small class="muted">ارسال: ${stamp(i.request.t)}</small>
+        ${ui.rejecting === i.id ? `
+          <div class="reject-box">
+            <label for="reason-${i.id}" style="font-size:13px">دلیل رد که به مراجعه‌کننده نشان داده می‌شود</label>
+            <select id="reason-${i.id}">${REASONS.map((r) => `<option>${esc(r)}</option>`).join("")}</select>
+            <div class="actions"><button class="btn btn-danger btn-sm" type="button" data-do="reject-yes">رد درخواست</button><button class="btn btn-ghost btn-sm" type="button" data-do="reject-no">انصراف</button></div>
+          </div>` : `
+          <div class="actions"><button class="btn btn-ok btn-sm" type="button" data-do="approve">تأیید تغییر</button><button class="btn btn-bad btn-sm" type="button" data-do="reject">رد</button></div>`}
+      </div>`).join("") : `<div class="empty">درخواست تغییر تازه‌ای نیست. از «نوبت من» یک درخواست بفرستید تا اینجا ظاهر شود.</div>`;
+    const sorted = state.items.slice().sort((a, b) => a.at - b.at);
+    const groups = [];
+    for (const i of sorted) { const k = day(i.at); const g = groups.find((x) => x.k === k); g ? g.list.push(i) : groups.push({ k, t: i.at, list: [i] }); }
+    $("#days").innerHTML = groups.map((g) => `
+      <h3 class="day-h">${g.k} · ${rel(g.t)}</h3>
+      <div class="rows">${g.list.map((i) => `
+        <div class="row${i.id === MINE ? " mine" : ""}">
+          <span class="t">${tm(i.at)}</span>
+          <span class="n"><span>${esc(i.alias)}${i.id === MINE ? '<span class="tag">نمونهٔ شما</span>' : ""}</span><small class="mono">${i.id}</small></span>
+          <span class="pill p-${i.status}">${ST[i.status]}</span>
+          <button class="btn btn-ghost btn-sm remind" type="button" data-remind="${i.id}">پیش‌نمایش یادآوری</button>
+        </div>`).join("")}</div>`).join("");
+  }
+  $("#reqs").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-do]"); if (!b) return;
+    const it = byId(b.closest("[data-id]").dataset.id), now = Date.now();
+    switch (b.dataset.do) {
+      case "approve":
+        it.history.push({ t: now, x: `پذیرش تغییر را تأیید کرد: ${day(it.request.to)}، ساعت ${tm(it.request.to)}` });
+        it.at = it.request.to; it.status = "confirmed"; it.request = null; it.last = { ok: true, t: now }; it.seen = false;
+        ui.steps.decide = true; ui.fresh = null; commit();
+        toast("تغییر تأیید شد و در «نوبت من» هم به‌روز شد.", it.id === MINE ? "دیدن نتیجه" : "", "me"); break;
+      case "reject": ui.rejecting = it.id; renderDesk(); $(`#reason-${it.id}`).focus(); break;
+      case "reject-no": ui.rejecting = null; renderDesk(); break;
+      case "reject-yes": {
+        const reason = $(`#reason-${it.id}`).value;
+        it.history.push({ t: now, x: "پذیرش درخواست تغییر را رد کرد: " + reason });
+        it.status = it.prev || "awaiting"; it.request = null; it.last = { ok: false, reason, t: now }; it.seen = false;
+        ui.rejecting = null; ui.steps.decide = true; ui.fresh = null; commit();
+        toast("درخواست رد شد و نتیجه در «نوبت من» نمایش داده می‌شود.", it.id === MINE ? "دیدن نتیجه" : "", "me"); break;
+      }
+    }
+  });
+  $("#days").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-remind]"); if (!b) return;
+    const it = byId(b.dataset.remind);
+    openModal("پیش‌نمایش پیام یادآوری · " + it.id, `
+      <span class="preview-tag" style="justify-self:start">پیش‌نمایش · در این دمو پیامی ارسال نمی‌شود</span>
+      <div class="phone"><span class="from">پیامک · ۲۴ ساعت پیش از نوبت</span><div class="bubble">${smsText(it)}</div></div>
+      <p class="muted" style="font-size:13px">در نسخهٔ واقعی، این پیام خودکار و از طریق سامانهٔ پیامک کلینیک فرستاده می‌شود.</p>`);
+  });
+
+  /* ---------- shared ---------- */
+  function renderBadge() {
+    const n = state.items.filter((i) => i.status === "change").length;
+    const b = $("#req-count"); b.textContent = fa(n); b.dataset.zero = String(n === 0);
+  }
+  function renderSteps() { document.querySelectorAll("#steps .step").forEach((li) => li.classList.toggle("done", !!ui.steps[li.dataset.step])); }
+  function render() { renderBadge(); renderSteps(); if (ui.view === "me") { renderAppt(); renderReminder(); } else renderDesk(); }
+  function commit() { save(); render(); }
+
+  const overlay = $("#overlay"); let lastFocus = null;
+  function openModal(title, html) { lastFocus = document.activeElement; $("#m-title").textContent = title; $("#m-body").innerHTML = html; overlay.hidden = false; $("#m-close").focus(); }
+  function closeModal() { if (overlay.hidden) return; overlay.hidden = true; if (lastFocus && document.contains(lastFocus)) lastFocus.focus(); }
+  $("#m-close").addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+  let tt;
+  function toast(msg, action, to) {
+    const t = $("#toast");
+    t.innerHTML = `<span>${esc(msg)}</span>` + (action ? `<button type="button">${esc(action)}</button>` : "");
+    if (action) t.querySelector("button").addEventListener("click", () => { t.hidden = true; location.hash = to; });
+    t.hidden = false; clearTimeout(tt); tt = setTimeout(() => (t.hidden = true), action ? 5200 : 2800);
+  }
+
+  function renderReset() {
+    const area = $("#reset-area");
+    if (!ui.resetAsk) {
+      area.innerHTML = `<button class="btn btn-ghost btn-sm" id="reset" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>بازنشانی دمو</button>`;
+      $("#reset").addEventListener("click", () => { ui.resetAsk = true; renderReset(); });
+    } else {
+      area.innerHTML = `<span style="display:inline-flex;gap:6px;align-items:center;font-size:13px">همهٔ تغییرات پاک شود؟
+        <button class="btn btn-danger btn-sm" id="reset-yes" type="button">بله، بازنشانی</button><button class="btn btn-ghost btn-sm" id="reset-no" type="button">انصراف</button></span>`;
+      $("#reset-yes").addEventListener("click", () => {
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        state = seed(); save();
+        Object.assign(ui, { choosing: false, pick: null, rejecting: null, resetAsk: false, fresh: null, steps: { ask: false, decide: false, see: false } });
+        renderReset(); location.hash = "me"; route(); toast("دمو به حالت اولیه برگشت.");
+      });
+      $("#reset-no").addEventListener("click", () => { ui.resetAsk = false; renderReset(); });
+      $("#reset-yes").focus();
+    }
+  }
+
+  renderReset(); route();
+})();
+</script>
+</body>
+</html>
